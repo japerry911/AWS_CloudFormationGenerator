@@ -20,7 +20,12 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
     Type: AWS::ECS::TaskDefinition
+  adoptAPetScraper:
+    Properties:
+      RepositoryName: adopt_a_pet_scraper
+    Type: AWS::ECR::Repository
   jackDevelopment:
     Properties:
       AccessControl: Private
+      BucketName: jack-development
     Type: AWS::S3::Bucket

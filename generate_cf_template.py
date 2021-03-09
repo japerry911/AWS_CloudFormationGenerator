@@ -2,6 +2,7 @@ from time import sleep
 from typing import Dict, List
 
 from troposphere import Template
+from troposphere.ecr import Repository
 from troposphere.ecs import (
     ContainerDefinition,
     Cluster,
@@ -15,15 +16,25 @@ class GenerateCFTemplate:
     def __init__(self):
         self.template = Template()
 
-    def add_s3_bucket(self, bucket_name: str, access: str):
+    def add_s3_bucket(self, title: str, bucket_name: str, access: str):
         if access.lower() == "private":
-            bucket_resource = Bucket(bucket_name, AccessControl=Private)
+            bucket_resource = Bucket(
+                title,
+                BucketName=bucket_name,
+                AccessControl=Private
+            )
         elif access.lower() == "publicreadwrite":
             bucket_resource = Bucket(
-                bucket_name, AccessControl=PublicReadWrite
+                title,
+                BucketName=bucket_name,
+                AccessControl=PublicReadWrite
             )
         elif access.lower() == "publicread":
-            bucket_resource = Bucket(bucket_name, AccessControl=PublicRead)
+            bucket_resource = Bucket(
+                title,
+                BucketName=bucket_name,
+                AccessControl=PublicRead
+            )
         else:
             raise ValueError(f"Unknown AccessControl Value Entered - {access}")
 
@@ -39,7 +50,7 @@ class GenerateCFTemplate:
             container_definitions: List[Dict],
             cpu: str = "256",
             memory: str = "512",
-            network_mode: str ="awsvpc",
+            network_mode: str = "awsvpc",
             port: int = 80
     ):
         container_definitions_list = list()
@@ -69,6 +80,18 @@ class GenerateCFTemplate:
         )
 
         self.template.add_resource(task_definition)
+
+    def add_ecr_repository(
+            self,
+            title: str,
+            repo_name: str
+    ):
+        repo_to_add = Repository(
+            title,
+            RepositoryName=repo_name
+        )
+
+        self.template.add_resource(repo_to_add)
 
     def to_yaml(self):
         yaml = self.template.to_yaml()

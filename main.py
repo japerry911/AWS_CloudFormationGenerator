@@ -16,10 +16,20 @@ def main():
     cf_generator = GenerateCFTemplate()
 
     logger.info("GENERATING S3 BUCKET")
-    cf_generator.add_s3_bucket("jackDevelopment", "Private")
+    cf_generator.add_s3_bucket(
+        "jackDevelopment",
+        "jack-development",
+        "Private"
+    )
 
     logger.info("GENERATING ECS FARGATE CLUSTER")
     cf_generator.add_ecs_fargate_cluster()
+
+    logger.info("ADDING ECR REPOSITORY")
+    cf_generator.add_ecr_repository(
+        "adoptAPetScraper",
+        "adopt_a_pet_scraper"
+    )
 
     logger.info("GENERATING ECS TASK DEFINITION")
     cf_generator.add_ecs_task_definition(
