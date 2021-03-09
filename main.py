@@ -18,7 +18,29 @@ def main():
     logger.info("GENERATING S3 BUCKET")
     cf_generator.add_s3_bucket("jackDevelopment", "Private")
 
-    logger.info("OUTPUTTING YAML FILE TEXT")
+    logger.info("GENERATING ECS FARGATE CLUSTER")
+    cf_generator.add_ecs_fargate_cluster()
+
+    logger.info("GENERATING ECS TASK DEFINITION")
+    cf_generator.add_ecs_task_definition(
+        cpu="512",
+        memory="1024",
+        network_mode="awsvpc",
+        port=4444,
+        container_definitions=[
+            {
+                "name": "selenium_standalone-chrome",
+                "image": "selenium/standalone-chrome:latest"
+            },
+            {
+                "name": "adopt_a_pet_scraper",
+                "image": "623215716102.dkr.ecr.us-east-2.amazonaws.com/"
+                         "adopt_a_pet_scraper:0.0.3-beta"
+            }
+        ]
+    )
+
+    logger.info("GENERATING YAML FILE")
     cf_generator.to_yaml()
 
 

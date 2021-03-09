@@ -1,0 +1,26 @@
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+  TaskDefinition:
+    Properties:
+      ContainerDefinitions:
+        - Essential: 'true'
+          Image: selenium/standalone-chrome:latest
+          Name: selenium_standalone-chrome
+          PortMappings:
+            - ContainerPort: 4444
+        - Essential: 'true'
+          Image: 623215716102.dkr.ecr.us-east-2.amazonaws.com/adopt_a_pet_scraper:0.0.3-beta
+          Name: adopt_a_pet_scraper
+          PortMappings:
+            - ContainerPort: 4444
+      Cpu: '512'
+      Memory: '1024'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  jackDevelopment:
+    Properties:
+      AccessControl: Private
+    Type: AWS::S3::Bucket

@@ -1,4 +1,13 @@
+from time import sleep
+from typing import Dict, List
+
 from troposphere import Template
+from troposphere.ecs import (
+    ContainerDefinition,
+    Cluster,
+    PortMapping,
+    TaskDefinition
+)
 from troposphere.s3 import Bucket, Private, PublicReadWrite, PublicRead
 
 
@@ -20,5 +29,53 @@ class GenerateCFTemplate:
 
         self.template.add_resource(bucket_resource)
 
+    def add_ecs_fargate_cluster(self):
+        ecs_cluster = Cluster("Cluster")
+
+        self.template.add_resource(ecs_cluster)
+
+    def add_ecs_task_definition(
+            self,
+            container_definitions: List[Dict],
+            cpu: str = "256",
+            memory: str = "512",
+            network_mode: str ="awsvpc",
+            port: int = 80
+    ):
+        container_definitions_list = list()
+
+        for cd in container_definitions:
+            try:
+                container_definitions_list.append(
+                    ContainerDefinition(
+                        Name=cd["name"],
+                        Image=cd["image"],
+                        Essential=True,
+                        PortMappings=[PortMapping(ContainerPort=port)]
+                    )
+                )
+            except KeyError as exc:
+                raise KeyError(
+                    f"Missing Key in container definition(s) - {exc}"
+                )
+
+        task_definition = TaskDefinition(
+            "TaskDefinition",
+            RequiresCompatibilities=["FARGATE"],
+            Cpu=cpu,
+            Memory=memory,
+            NetworkMode=network_mode,
+            ContainerDefinitions=container_definitions_list
+        )
+
+        self.template.add_resource(task_definition)
+
     def to_yaml(self):
-        print(self.template.to_yaml())
+        yaml = self.template.to_yaml()
+
+        # added 1 second of sleep so that it does not print before logs output
+        sleep(1)
+        print(yaml)
+
+        with open("./cloud_formation_template.yaml", "w") as write_file:
+            write_file.write(yaml)
