@@ -49,8 +49,20 @@ class GenerateCFTemplate:
     def create_ecs_executor_role(self):
         role = Role(
             "ecsExecutorRole",
-
+            ManagedPolicyArns=[
+                "arn:aws:iam::aws:policy/service-role/"
+                "AmazonECSTaskExecutionRolePolicy",
+                "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+            ],
+            AssumeRolePolicyDocument={"Statement": [{
+                "Action": ["sts:AssumeRole"],
+                "Effect": "Allow",
+                "Principal": {"Service": ["ecs.amazonaws.com"]}
+            }]}
         )
+
+        self.template.add_resource(role)
 
     def add_ecs_task_definition(
             self,
@@ -91,7 +103,7 @@ class GenerateCFTemplate:
             Memory=memory,
             NetworkMode=network_mode,
             ContainerDefinitions=container_definitions_list,
-            TaskRoleArn=Ref(Role("ecsExecutorRole"))
+            ExecutionRoleArn=Ref(Role("ecsExecutorRole"))
         )
 
         self.template.add_resource(task_definition)

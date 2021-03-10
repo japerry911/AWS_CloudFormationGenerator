@@ -13,16 +13,31 @@ Resources:
           Image: 623215716102.dkr.ecr.us-east-2.amazonaws.com/adopt_a_pet_scraper:0.0.3-beta
           Name: adopt_a_pet_scraper
       Cpu: '512'
+      ExecutionRoleArn: !Ref 'ecsExecutorRole'
       Memory: '1024'
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      TaskRoleArn: !Ref 'ecsTaskExecutionRole'
     Type: AWS::ECS::TaskDefinition
   adoptAPetScraper2:
     Properties:
       RepositoryName: adopt_a_pet_scraper2
     Type: AWS::ECR::Repository
+  ecsExecutorRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ecs.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+    Type: AWS::IAM::Role
   jackDevelopment2:
     Properties:
       AccessControl: Private
