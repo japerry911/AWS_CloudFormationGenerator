@@ -47,7 +47,10 @@ class GenerateCFTemplate:
         self.template.add_resource(ecs_cluster)
 
     def create_ecs_executor_role(self):
-        pass
+        role = Role(
+            "ecsExecutorRole",
+
+        )
 
     def add_ecs_task_definition(
             self,
