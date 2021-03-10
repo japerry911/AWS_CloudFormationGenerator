@@ -12,20 +12,19 @@ Resources:
         - Essential: 'true'
           Image: 623215716102.dkr.ecr.us-east-2.amazonaws.com/adopt_a_pet_scraper:0.0.3-beta
           Name: adopt_a_pet_scraper
-          PortMappings:
-            - ContainerPort: 4444
       Cpu: '512'
       Memory: '1024'
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
+      TaskRoleArn: !Ref 'ecsTaskExecutionRole'
     Type: AWS::ECS::TaskDefinition
-  adoptAPetScraper:
+  adoptAPetScraper2:
     Properties:
-      RepositoryName: adopt_a_pet_scraper
+      RepositoryName: adopt_a_pet_scraper2
     Type: AWS::ECR::Repository
-  jackDevelopment:
+  jackDevelopment2:
     Properties:
       AccessControl: Private
-      BucketName: jack-development
+      BucketName: jack-development2
     Type: AWS::S3::Bucket

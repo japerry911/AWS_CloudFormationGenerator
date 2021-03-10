@@ -1,7 +1,7 @@
 from time import sleep
 from typing import Dict, List
 
-from troposphere import Template
+from troposphere import Template, Ref
 from troposphere.ecr import Repository
 from troposphere.ecs import (
     ContainerDefinition,
@@ -9,6 +9,7 @@ from troposphere.ecs import (
     PortMapping,
     TaskDefinition
 )
+from troposphere.iam import Role
 from troposphere.s3 import Bucket, Private, PublicReadWrite, PublicRead
 
 
@@ -45,6 +46,9 @@ class GenerateCFTemplate:
 
         self.template.add_resource(ecs_cluster)
 
+    def create_ecs_executor_role(self):
+        pass
+
     def add_ecs_task_definition(
             self,
             container_definitions: List[Dict],
@@ -55,6 +59,8 @@ class GenerateCFTemplate:
     ):
         container_definitions_list = list()
 
+        self.create_ecs_executor_role()
+
         for cd in container_definitions:
             try:
                 container_definitions_list.append(
@@ -63,6 +69,11 @@ class GenerateCFTemplate:
                         Image=cd["image"],
                         Essential=True,
                         PortMappings=[PortMapping(ContainerPort=port)]
+                    ) if cd["port_bool"] is True else
+                    ContainerDefinition(
+                        Name=cd["name"],
+                        Image=cd["image"],
+                        Essential=True,
                     )
                 )
             except KeyError as exc:
@@ -76,7 +87,8 @@ class GenerateCFTemplate:
             Cpu=cpu,
             Memory=memory,
             NetworkMode=network_mode,
-            ContainerDefinitions=container_definitions_list
+            ContainerDefinitions=container_definitions_list,
+            TaskRoleArn=Ref(Role("ecsExecutorRole"))
         )
 
         self.template.add_resource(task_definition)

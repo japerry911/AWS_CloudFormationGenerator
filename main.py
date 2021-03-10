@@ -17,8 +17,8 @@ def main():
 
     logger.info("GENERATING S3 BUCKET")
     cf_generator.add_s3_bucket(
-        "jackDevelopment",
-        "jack-development",
+        "jackDevelopment2",
+        "jack-development2",
         "Private"
     )
 
@@ -27,8 +27,8 @@ def main():
 
     logger.info("ADDING ECR REPOSITORY")
     cf_generator.add_ecr_repository(
-        "adoptAPetScraper",
-        "adopt_a_pet_scraper"
+        "adoptAPetScraper2",
+        "adopt_a_pet_scraper2"
     )
 
     logger.info("GENERATING ECS TASK DEFINITION")
@@ -40,12 +40,14 @@ def main():
         container_definitions=[
             {
                 "name": "selenium_standalone-chrome",
-                "image": "selenium/standalone-chrome:latest"
+                "image": "selenium/standalone-chrome:latest",
+                "port_bool": True
             },
             {
                 "name": "adopt_a_pet_scraper",
                 "image": "623215716102.dkr.ecr.us-east-2.amazonaws.com/"
-                         "adopt_a_pet_scraper:0.0.3-beta"
+                         "adopt_a_pet_scraper:0.0.3-beta",
+                "port_bool": False
             }
         ]
     )
