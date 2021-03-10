@@ -12,7 +12,7 @@ def main():
     logger = logging.getLogger(__name__ + "." + uuid_str)
     logging.config.dictConfig(config["logging_dict"])
 
-    logger.info("STARTING CLOUD FORMATION TEMPLATE GENEfRATING")
+    logger.info("STARTING CLOUD FORMATION TEMPLATE GENERATING")
     cf_generator = GenerateCFTemplate()
 
     logger.info("GENERATING S3 BUCKET")
